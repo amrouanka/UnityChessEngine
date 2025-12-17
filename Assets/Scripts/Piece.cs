@@ -10,7 +10,5 @@ public static class Piece
 
     public const int White = 0b01000;
     public const int Black = 0b10000;
-
-    public const int ColorMask = White | Black;
     public const int TypeMask = 0b111;
 }

@@ -9,6 +9,10 @@ public static class Board
     public static bool blackKingsideCastlingRights;
     public static bool blackQueensideCastlingRights;
     public static int enPassantTargetSquare;
+    // Bitboards (incremental migration alongside Square[])
+    public static ulong WhitePawns, WhiteKnights, WhiteBishops, WhiteRooks, WhiteQueens, WhiteKing;
+    public static ulong BlackPawns, BlackKnights, BlackBishops, BlackRooks, BlackQueens, BlackKing;
+    public static ulong WhitePiecesBB, BlackPiecesBB, OccupiedBB;
     public static string startFEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1";
 
     static Board()
@@ -81,6 +85,52 @@ public static class Board
                 file++;
             }
         }
+        // After loading the array-based board, populate bitboards for incremental migration.
+        UpdateBitboards();
+    }
+
+    public static void UpdateBitboards()
+    {
+        WhitePawns = WhiteKnights = WhiteBishops = WhiteRooks = WhiteQueens = WhiteKing = 0UL;
+        BlackPawns = BlackKnights = BlackBishops = BlackRooks = BlackQueens = BlackKing = 0UL;
+        WhitePiecesBB = BlackPiecesBB = OccupiedBB = 0UL;
+
+        for (int i = 0; i < 64; i++)
+        {
+            int p = Square[i];
+            if (p == Piece.None) continue;
+            ulong bit = 1UL << i;
+            bool white = (p & Piece.White) != 0;
+            int type = p & Piece.TypeMask;
+            if (white)
+            {
+                switch (type)
+                {
+                    case Piece.Pawn: WhitePawns |= bit; break;
+                    case Piece.Knight: WhiteKnights |= bit; break;
+                    case Piece.Bishop: WhiteBishops |= bit; break;
+                    case Piece.Rook: WhiteRooks |= bit; break;
+                    case Piece.Queen: WhiteQueens |= bit; break;
+                    case Piece.King: WhiteKing |= bit; break;
+                }
+            }
+            else
+            {
+                switch (type)
+                {
+                    case Piece.Pawn: BlackPawns |= bit; break;
+                    case Piece.Knight: BlackKnights |= bit; break;
+                    case Piece.Bishop: BlackBishops |= bit; break;
+                    case Piece.Rook: BlackRooks |= bit; break;
+                    case Piece.Queen: BlackQueens |= bit; break;
+                    case Piece.King: BlackKing |= bit; break;
+                }
+            }
+        }
+
+        WhitePiecesBB = WhitePawns | WhiteKnights | WhiteBishops | WhiteRooks | WhiteQueens | WhiteKing;
+        BlackPiecesBB = BlackPawns | BlackKnights | BlackBishops | BlackRooks | BlackQueens | BlackKing;
+        OccupiedBB = WhitePiecesBB | BlackPiecesBB;
     }
 
         private static int PieceFromChar(char c)
@@ -164,6 +214,8 @@ public static class Board
         Square[move.TargetSquare] = piece;
         Square[move.StartSquare] = Piece.None;
         isWhiteTurn = !isWhiteTurn;
+        // keep bitboards in sync (simple but correct approach)
+        UpdateBitboards();
     }
 
     public static MoveState SaveState(Move move)
@@ -241,6 +293,8 @@ public static class Board
         }
 
         isWhiteTurn = !isWhiteTurn;
+        // restore bitboards after undo
+        UpdateBitboards();
     }
 
     public static void MakeMoveAndUnmake(Move move)

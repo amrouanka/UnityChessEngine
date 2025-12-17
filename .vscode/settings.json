@@ -56,5 +56,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "My Chess Engine.sln"
+    "dotnet.defaultSolution": "UnityChessEngine.sln"
 }

@@ -2,8 +2,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using static GameLogic;
 using UnityEngine.SceneManagement;
-using static Board;
-using System.Linq;
 
 public class RepresentPieces : MonoBehaviour
 {
@@ -255,7 +253,7 @@ public class RepresentPieces : MonoBehaviour
 
     private void MoveGraphicalPiece(int fromIndex, int toIndex, int promotionPiece)
     {
-        MakeMove(new Move(fromIndex, toIndex, promotionPiece));
+        Board.MakeMove(new Move(fromIndex, toIndex, promotionPiece));
         ClearPieces();
         CreatePieces();
     }
