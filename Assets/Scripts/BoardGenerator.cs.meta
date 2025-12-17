@@ -1,0 +1,13 @@
+fileFormatVersion: 2
+guid: ac9c47ebbaf4e5f4a8a29ca1244c4c54
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - lightSquare: {fileID: 6808188111629275831, guid: f0bc09cecb614f04daf809d309839789, type: 3}
+  - darkSquare: {fileID: 3075740370491835590, guid: bcfeda4851a2a5f4fa2b74cf72589d69, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
